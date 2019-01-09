@@ -12,7 +12,6 @@ description: "Ghost is a fully open source, adaptable platform for building and 
 globals:
   DB_PASSWORD: "${fn.password}"
 skipNodeEmails: false
-
 engine: java8
 ha: 'true'
 nodes:
@@ -21,7 +20,7 @@ nodes:
   nodeType: nodejs
 - cloudlets: 8
   count: 1
-  nodeType: mysql5
+  nodeType: mysql
 onInstall:
 - deployArchve
 - createDb
@@ -36,18 +35,20 @@ actions:
       context: ROOT
       archive: https://github.com/TryGhost/Ghost/releases/download/2.10.0/Ghost-2.10.0.zip
   deployHomeDir:
-  - cmd:
-    - sed -i "s|\"url\":\ \"http:\/\/localhost:2368\",|\"url\":\ \"http:\/\/${env.domain}\",|g" /home/jelastic/ROOT/core/server/config/defaults.json
-    - sed -i "s|\"host\":\ \"127.0.0.1\",|\"host\":\ \"${nodes.cp.master.intIP}\",|g" /home/jelastic/ROOT/core/server/config/defaults.json
-    - sed -i "s|2368|8080|g" /home/jelastic/ROOT/core/server/config/defaults.json
-    - sed -i "s|\"url\":\ \"http:\/\/localhost:2368\",|\"url\":\ \"http:\/\/${env.domain}\",|g" /home/jelastic/ROOT/core/server/config/env/config.development.json
-    - sed -i "s|\"client\":\ \"sqlite3\",|\"client\":\ \"mysql\",|g" /home/jelastic/ROOT/core/server/config/env/config.development.json
-    - sed -i "s|\"filename\":\ \"content\/data\/ghost-dev.db\"|\"host\"\ :\ \"${nodes.sqldb.master.intIP}\",\n\"user\"\ :\ \"root\",\n\"password\"\ :\ \"${nodes.mysql5.password}\",\n\"database\"\ :\ \"ghost\"|g" /home/jelastic/ROOT/core/server/config/env/config.development.json
-    - sed -i "s|127.0.0.1|${nodes.sqldb.master.intIP}|g" /home/jelastic/ROOT/core/server/config/env/config.production.json
-    - sed -i "s|\"password\"\ :\ \"\"|\"password\"\ :\ \"${nodes.mysql5.password}\"|g" /home/jelastic/ROOT/core/server/config/env/config.production.json
+  - cmd: |-
+      sed -i "s|\"url\":\ \"http:\/\/localhost:2368\",|\"url\":\ \"http:\/\/${env.domain}\",|g" /home/jelastic/ROOT/core/server/config/defaults.json
+      sed -i "s|\"host\":\ \"127.0.0.1\",|\"host\":\ \"${nodes.cp.master.intIP}\",|g" /home/jelastic/ROOT/core/server/config/defaults.json
+      sed -i "s|2368|8080|g" /home/jelastic/ROOT/core/server/config/defaults.json
+      sed -i "s|\"url\":\ \"http:\/\/localhost:2368\",|\"url\":\ \"http:\/\/${env.domain}\",|g" /home/jelastic/ROOT/core/server/config/env/config.development.json
+      sed -i "s|\"client\":\ \"sqlite3\",|\"client\":\ \"mysql\",|g" /home/jelastic/ROOT/core/server/config/env/config.development.json
+      sed -i "s|\"filename\":\ \"content\/data\/ghost-dev.db\"|\"host\"\ :\ \"${nodes.sqldb.master.intIP}\",\n\"user\"\ :\ \"root\",\n\"password\"\ :\ \"${nodes.mysql.password}\",\n\"database\"\ :\ \"ghost\"|g" /home/jelastic/ROOT/core/server/config/env/config.development.json
+      sed -i "s|127.0.0.1|${nodes.sqldb.master.intIP}|g" /home/jelastic/ROOT/core/server/config/env/config.production.json
+      sed -i "s|\"password\"\ :\ \"\"|\"password\"\ :\ \"${nodes.mysql.password}\"|g" /home/jelastic/ROOT/core/server/config/env/config.production.json
+      cd ROOT
+      sudo npm install -g knex-migrator
+      knex-migrator init
     nodeType: nodejs
-
   createDb:
        cmd[sqldb]:
-         mysql -uroot -p${nodes.mysql5.password} -e "create database ghost"
+         mysql -uroot -p${nodes.mysql.password} -e "create database ghost"
 
