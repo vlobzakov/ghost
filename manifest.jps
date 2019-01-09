@@ -1,8 +1,8 @@
 ---
 version: '0.3'
 type: install
-name: Ghost
-logo: https://raw.githubusercontent.com/vlobzakov/ghost/master/images/ghost.png
+name: Ghost - the professional publishing platform
+logo: https://raw.githubusercontent.com/vlobzakov/ghost/master/images/ghost-white.png
 homepage: https://ghost.org/
 categories:
 - apps/cms
@@ -12,8 +12,6 @@ description:
   short: The professional publishing platform
 success: |-
   Your open source blog platform is ready to use. To add custom domain name for your Ghost installation follow the steps described in our [documentation](http://docs.jelastic.com/custom-domains).
-globals:
-  DB_PASSWORD: "${fn.password}"
 skipNodeEmails: false
 engine: java8
 ha: 'true'
