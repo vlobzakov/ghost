@@ -1,7 +1,7 @@
 ---
 version: '0.3'
 type: install
-name: Ghost - the professional publishing platform
+name: Ghost
 logo: https://raw.githubusercontent.com/vlobzakov/ghost/master/images/ghost-white.png
 homepage: https://ghost.org/
 categories:
