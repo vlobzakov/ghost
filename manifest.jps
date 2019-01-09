@@ -7,8 +7,11 @@ homepage: https://ghost.org/
 categories:
 - apps/cms
 - apps/content-management
-short: The professional publishing platform
-description: "Ghost is a fully open source, adaptable platform for building and running a modern online publication."
+description: 
+  text: Ghost is a fully open source, adaptable platform for building and running a modern online publication.
+  short: The professional publishing platform
+success: |-
+  Your open source blog platform is ready to use. To add custom domain name for your Ghost installation follow the steps described in our [documentation](http://docs.jelastic.com/custom-domains).
 globals:
   DB_PASSWORD: "${fn.password}"
 skipNodeEmails: false
@@ -27,7 +30,6 @@ onInstall:
 - deployHomeDir
 - restartNodes:
     - nodeGroup: cp
-success: To add custom domain name for your Ghost installation follow the steps described in our [documentation](http://docs.jelastic.com/custom-domains).
 actions:
   deployArchve:
     deploy:
@@ -51,4 +53,3 @@ actions:
   createDb:
        cmd[sqldb]:
          mysql -uroot -p${nodes.mysql.password} -e "create database ghost"
-
