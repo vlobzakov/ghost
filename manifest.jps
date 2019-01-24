@@ -1,20 +1,21 @@
 ---
-version: '0.3'
+version: '1.5'
 type: install
 name: Ghost
 logo: https://raw.githubusercontent.com/vlobzakov/ghost/master/images/ghost-white.png
 homepage: https://ghost.org/
+
 categories:
 - apps/cms
 - apps/content-management
+
 description: 
   text: Ghost is a fully open source, adaptable platform for building and running a modern online publication.
   short: The professional publishing platform
+
 success: |-
   Your open source blog platform is ready to use. To add custom domain name for your Ghost installation follow the steps described in our [documentation](http://docs.jelastic.com/custom-domains).
-skipNodeEmails: false
-engine: java8
-ha: 'true'
+
 nodes:
 - cloudlets: 18
   count: 1
@@ -22,20 +23,22 @@ nodes:
 - cloudlets: 8
   count: 1
   nodeType: mysql
+
 onInstall:
-- deployArchve
+- deployArchive
 - createDb
 - deployHomeDir
 - restartNodes:
     - nodeGroup: cp
+
 actions:
-  deployArchve:
+  deployArchive:
     deploy:
       name: Ghost-2.10.0.zip
       context: ROOT
       archive: https://github.com/TryGhost/Ghost/releases/download/2.10.0/Ghost-2.10.0.zip
   deployHomeDir:
-  - cmd: |-
+    cmd[nodejs]: |-
       sed -i "s|\"url\":\ \"http:\/\/localhost:2368\",|\"url\":\ \"http:\/\/${env.domain}\",|g" /home/jelastic/ROOT/core/server/config/defaults.json
       sed -i "s|\"host\":\ \"127.0.0.1\",|\"host\":\ \"${nodes.cp.master.intIP}\",|g" /home/jelastic/ROOT/core/server/config/defaults.json
       sed -i "s|2368|8080|g" /home/jelastic/ROOT/core/server/config/defaults.json
@@ -47,7 +50,6 @@ actions:
       cd ROOT
       sudo npm install -g knex-migrator
       knex-migrator init
-    nodeType: nodejs
   createDb:
        cmd[sqldb]:
          mysql -uroot -p${nodes.mysql.password} -e "create database ghost"
