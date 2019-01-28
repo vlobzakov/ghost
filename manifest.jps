@@ -15,7 +15,12 @@ description:
 
 success: |-
   Your open source blog platform is ready to use. To add custom domain name for your Ghost installation follow the steps described in our [documentation](http://docs.jelastic.com/custom-domains).
-
+  
+globals:
+  configPath: /home/jelastic/ROOT/core/server/config
+  defaultConfig: /home/jelastic/ROOT/core/server/config/defaults.json
+  configDevelopment: /home/jelastic/ROOT/core/server/config/env/config.development.json
+  configProduction: /home/jelastic/ROOT/core/server/config/env/config.production.json
 nodes:
 - cloudlets: 18
   count: 1
@@ -39,15 +44,15 @@ actions:
       archive: https://github.com/TryGhost/Ghost/releases/download/2.10.0/Ghost-2.10.0.zip
   deployHomeDir:
     cmd[nodejs]: |-
-      sed -i "s|\"url\":\ \"http:\/\/localhost:2368\",|\"url\":\ \"http:\/\/${env.domain}\",|g" /home/jelastic/ROOT/core/server/config/defaults.json
-      sed -i "s|\"host\":\ \"127.0.0.1\",|\"host\":\ \"${nodes.cp.master.intIP}\",|g" /home/jelastic/ROOT/core/server/config/defaults.json
-      sed -i "s|2368|8080|g" /home/jelastic/ROOT/core/server/config/defaults.json
-      sed -i "s|\"url\":\ \"http:\/\/localhost:2368\",|\"url\":\ \"http:\/\/${env.domain}\",|g" /home/jelastic/ROOT/core/server/config/env/config.development.json
-      sed -i "s|\"client\":\ \"sqlite3\",|\"client\":\ \"mysql\",|g" /home/jelastic/ROOT/core/server/config/env/config.development.json
-      sed -i "s|\"filename\":\ \"content\/data\/ghost-dev.db\"|\"host\"\ :\ \"${nodes.sqldb.master.intIP}\",\n\"user\"\ :\ \"root\",\n\"password\"\ :\ \"${nodes.mysql.password}\",\n\"database\"\ :\ \"ghost\"|g" /home/jelastic/ROOT/core/server/config/env/config.development.json
-      sed -i "s|127.0.0.1|${nodes.sqldb.master.intIP}|g" /home/jelastic/ROOT/core/server/config/env/config.production.json
-      sed -i "s|\"password\"\ :\ \"\"|\"password\"\ :\ \"${nodes.mysql.password}\"|g" /home/jelastic/ROOT/core/server/config/env/config.production.json
-      cd ROOT
+      sed -i 's|"url": "http:\/\/localhost:2368",|"url":"http:\/\/${env.domain}",|g' ${globals.defaultConfig}
+      sed -i 's|"host": "127.0.0.1",|"host":"${nodes.cp.master.intIP}",|g' ${globals.defaultConfig}
+      sed -i 's|2368|8080|g' ${globals.defaultConfig}
+      sed -i 's|"url": "http:\/\/localhost:2368",|"url": "http:\/\/${env.domain}",|g' ${globals.configDevelopment}
+      sed -i 's|"client": "sqlite3",|"client": "mysql",|g' ${globals.configDevelopment}
+      sed -i 's|"filename": "content\/data\/ghost-dev.db"|"host": "${nodes.sqldb.master.intIP}",\n"user": "root",\n"password": "${nodes.mysql.password}",\n"database": "ghost"|g' ${globals.configDevelopment}
+      sed -i 's|127.0.0.1|${nodes.sqldb.master.intIP}|g' ${globals.configProduction}
+      sed -i 's|"password" : ""|"password" : "${nodes.mysql.password}"|g' ${globals.configProduction}
+      cd $HOME/ROOT
       sudo npm install -g knex-migrator
       knex-migrator init
   createDb:
