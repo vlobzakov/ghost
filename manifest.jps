@@ -4,23 +4,25 @@ type: install
 name: Ghost
 logo: https://raw.githubusercontent.com/vlobzakov/ghost/master/images/ghost-white.png
 homepage: https://ghost.org/
+baseUrl: https://raw.githubusercontent.com/vlobzakov/ghost/master
 
 categories:
 - apps/cms
 - apps/content-management
 
 description: 
-  text: Ghost is a fully open source, adaptable platform for building and running a modern online publication.
+  text: /texts/description.md
   short: The professional publishing platform
 
-success: |-
-  Your open source blog platform is ready to use. Follow this link to create an owner account: **[http://${env.domain}/ghost/#/setup/one](http://${env.domain}/ghost/#/setup/one)**. To review your blogs press **Open in Browser**. To add a custom domain name for your Ghost installation see our [documentation](http://docs.jelastic.com/custom-domains).
+success: 
+  /texts/success.md
   
 globals:
   configPath: /home/jelastic/ROOT/core/server/config
-  defaultConfig: /home/jelastic/ROOT/core/server/config/defaults.json
-  configDevelopment: /home/jelastic/ROOT/core/server/config/env/config.development.json
-  configProduction: /home/jelastic/ROOT/core/server/config/env/config.production.json
+  defaultConfig: ${globals.configPath}/defaults.json
+  configDevelopment: ${globals.configPath}/env/config.development.json
+  configProduction: ${globals.configPath}/env/config.production.json
+
 nodes:
 - cloudlets: 18
   count: 1
