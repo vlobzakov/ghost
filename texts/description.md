@@ -1,1 +1,1 @@
-Ghost is a fully open source, adaptable platform for building and running a modern online publication.
+Ghost is a free, open-source blogging platform with a user-friendly interface designed to simplify and speed up the online publishing process for both individual bloggers and online publishing.
