@@ -1,8 +1,7 @@
----
 version: '1.5'
 type: install
 name: Ghost
-logo: https://raw.githubusercontent.com/vlobzakov/ghost/master/images/ghost-white.png
+logo: /images/ghost-white.png
 homepage: https://ghost.org/
 baseUrl: https://raw.githubusercontent.com/vlobzakov/ghost/master
 
