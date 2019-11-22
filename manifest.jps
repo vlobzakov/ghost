@@ -1,12 +1,13 @@
 version: '1.5'
+appVersion: latest
 type: install
+id: ghost
 name: Ghost
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/ghost/master
 logo: /images/ghost-white.png
 homepage: https://ghost.org/
-baseUrl: https://raw.githubusercontent.com/vlobzakov/ghost/master
 
 categories:
-- apps/cms
 - apps/content-management
 
 description: 
@@ -24,28 +25,33 @@ globals:
 
 nodes:
 - cloudlets: 18
-  count: 1
   nodeType: nodejs
   env:
     NODE_ENV: production
 - cloudlets: 8
-  count: 1
   nodeType: mysql
+
 
 onInstall:
 - deployArchive
 - createDb
 - deployHomeDir
 - restartNodes:
-    nodeGroup: cp
+    nodeGroup: [cp]
+- migration_lock_remove
+- restartNodes:
+    nodeGroup: [cp]
+
+
 actions:
   deployArchive:
     deploy:
       name: Ghost-latest
       context: ROOT
       archive: https://ghost.org/zip/ghost-latest.zip
+
   deployHomeDir:
-    cmd[nodejs]:
+    cmd[cp]:
       sed -i 's|"url":\ "http:\/\/localhost:2368",|"url":"http:\/\/${env.domain}",|g' ${globals.defaultConfig};
       sed -i 's|"host":\ "127.0.0.1",|"host":"${nodes.cp.master.intIP}",|g' ${globals.defaultConfig};
       sed -i 's|2368|8080|g' ${globals.defaultConfig};
@@ -55,6 +61,12 @@ actions:
       sed -i 's|127.0.0.1|${nodes.sqldb.master.intIP}|g' ${globals.configProduction};
       sed -i 's|"password"\ :\ ""|"password"\ :\ "${nodes.mysql.password}"|g' ${globals.configProduction};
       cd $HOME/ROOT;
+
   createDb:
        cmd[sqldb]:
-         mysql -uroot -p${nodes.mysql.password} -e "create database ghost"
+         mysql -uroot -p${nodes.mysql.password} -e "create database ghost" 2>&1 1>/dev/null
+  
+  migration_lock_remove:
+     cmd[sqldb]:
+         mysql -uroot -p${nodes.mysql.password} -e "use ghost;UPDATE migrations_lock set locked=0 where lock_key='km01';"
+ 
